@@ -1,0 +1,12 @@
+/* @keyframes drop {
+  0% {
+    transform: translateY(-500%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.circle {
+  transition: top 0.5s ease-in;
+} */
