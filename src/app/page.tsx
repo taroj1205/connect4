@@ -2,8 +2,8 @@ import Link from 'next/link'
 
 export default function Home() {
 	return (
-		<main className="min-h-[100svh] flex flex-col items-center justify-center bg-gradient-to-r from-gray-100 to-gray-300 text-gray-800">
-			<div className="text-center mt-8">
+		<main className="min-h-[100svh] flex flex-col items-center justify-center bg-gradient-to-r from-gray-100 to-gray-300 text-gray-800 p-4">
+			<div className="text-center mt-4">
 				<h1 className="text-5xl font-bold mb-4">Welcome to Connect 4!</h1>
 				<p className="text-xl mb-4">
 				</p>
