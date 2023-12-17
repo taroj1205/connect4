@@ -17,7 +17,7 @@ export default function Home() {
 			</div>
 
 			<div className="mt-4">
-				<img src="/connect-4.jpg" alt="Game Image" className="w-full px-4 object-cover rounded-lg shadow-md" />
+				<img src="/connect-4.jpg" alt="Game Image" className="w-full max-w-3xl px-4 object-cover rounded-md" />
 			</div>
 
 			<div className="mt-8">
