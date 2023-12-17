@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
 import { FaArrowDown } from "react-icons/fa";
-import "./style.css";
 
 const Play = () => {
 	const [grid, setGrid] = useState(
