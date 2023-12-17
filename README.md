@@ -1,10 +1,19 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Connect 4 Game
 
-## Getting Started
+This is a Connect 4 game implemented in TypeScript and React, using the Next.js framework. The game board is represented by a 6x7 grid, where two players take turns to drop their discs. The first player to align four of their own discs either vertically, horizontally, or diagonally wins the game.
 
-First, run the development server:
+### Getting Started
 
-```bash
+First, clone the repository to your local machine:
+`git clone https://github.com/taroj1205/connect4.git`
+
+Navigate into the project directory:
+
+`cd connect4`
+
+Install the dependencies:
+
+```
 npm run dev
 # or
 yarn dev
@@ -14,23 +23,32 @@ pnpm dev
 bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start the development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Open [http://localhost:3000](http://localhost:3000) in your browser to start playing.
 
-## Learn More
+### Game Rules
 
-To learn more about Next.js, take a look at the following resources:
+1. The game is played on a grid that's 6 cells by 7 cells.
+2. Two players take turns.
+3. The pieces fall straight down, occupying the lowest available space within the column.
+4. The objective of the game is to connect four of one's own discs of the same color next to each other vertically, horizontally, or diagonally before your opponent.
+5. The game ends in a tie if the entire board is filled with discs and no player has won.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## Deploy on Vercel
+### License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the MIT license.
