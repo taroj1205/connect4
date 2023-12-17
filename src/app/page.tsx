@@ -1,43 +1,35 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 export default function Home() {
-  return (
-		<main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-blue-700 text-white">
+	return (
+		<main className="min-h-[100svh] flex flex-col items-center justify-center bg-gradient-to-r from-gray-100 to-gray-300 text-gray-800">
 			<div className="text-center mt-8">
 				<h1 className="text-5xl font-bold mb-4">Welcome to Connect 4!</h1>
-				<p className="text-xl mb-8">
-					The classic game, reimagined in a modern and digital format.
+				<p className="text-xl mb-4">
 				</p>
-				<Image
-					src="/four-in-a-row.svg"
-					alt="Four in a Row Logo"
-					width={200}
-					height={200}
-				/>
+			</div>
+
+			<div className="mt-8">
+				<h2 className="text-3xl font-bold mb-4">How to Play</h2>
+				<p className="text-lg mb-4">
+					Connect four of your pieces in a row while preventing your opponent from doing the same.
+				</p>
+			</div>
+
+			<div className="mt-4">
+				<img src="/connect-4.jpg" alt="Game Image" className="w-full px-4 object-cover rounded-lg shadow-md" />
 			</div>
 
 			<div className="mt-8">
 				<Link
 					href="/play"
-					className="bg-white text-blue-700 px-6 py-3 rounded-lg font-bold text-xl hover:bg-blue-200 transition-colors duration-200">
+					className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold text-xl hover:bg-blue-700 transition-colors duration-200">
 					Play Now
 				</Link>
 			</div>
 
-			<div className="mt-8 text-center">
-				<p className="mb-4">
-					Want to learn more about the game or need some tips?
-				</p>
-				<Link
-					href="/learn"
-					className="underline text-white hover:text-blue-200 transition-colors duration-200">
-					Click here to Learn More
-				</Link>
-			</div>
-
 			<footer className="mt-auto p-4 text-center">
-				<p>© 2023 Four in a Row. All rights reserved.</p>
+				<p>© 2023 Connect 4. All rights reserved.</p>
 			</footer>
 		</main>
 	);
