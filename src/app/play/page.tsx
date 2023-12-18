@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Confetti from "react-dom-confetti";
 import { FaArrowDown } from "react-icons/fa";
 
@@ -9,7 +9,7 @@ const Play = () => {
 			.fill(null)
 			.map(() => Array(7).fill(null))
 	);
-	const [currentPlayer, setCurrentPlayer] = useState("Red");
+	const currentPlayer = useRef("Red");
 	const [winner, setWinner] = useState<string | null>(null);
 	const [lastMove, setLastMove] = useState<[number, number] | null>(null);
 	const [hoveredCol, setHoveredCol] = useState<boolean[]>(Array(7).fill(false));
@@ -26,12 +26,14 @@ const Play = () => {
 		null
 	);
 	const [isChecking, setIsChecking] = useState(false);
+	const [bgColor, setBgColor] = useState("bg-gray-100");
 
 	useEffect(() => {
 		const cellWidth = document.getElementById("board")!.offsetWidth / 7;
 		const cellHeight = document.getElementById("board")!.offsetHeight / 6;
 		setCellSize({ width: cellWidth, height: cellHeight });
 	}, []);
+	const [playingWithAI, setPlayingWithAI] = useState(false);
 
 	const checkWin = (grid: any[]) => {
 		// Check horizontal, vertical and diagonal directions
@@ -81,14 +83,14 @@ const Play = () => {
 		return { winner: null, winningCells: null };
 	};
 
-	const handleClick = (column: number) => {
+	const handleClick = async (column: number) => {
 		if (winner || isChecking) return;
 		setIsChecking(true);
 		const newGrid = [...grid];
 		let isColumnFull = true;
 		for (let i = 5; i >= 0; i--) {
 			if (!newGrid[i][column]) {
-				newGrid[i][column] = currentPlayer;
+				newGrid[i][column] = currentPlayer.current;
 				setLastMove([i, column]);
 				setGrid(newGrid);
 				const cellWidth = document.getElementById("board")!.offsetWidth / 7;
@@ -109,8 +111,43 @@ const Play = () => {
 						setIsChecking(false);
 					}, 500);
 				} else {
-					setCurrentPlayer(currentPlayer === "Red" ? "Yellow" : "Red");
-					setIsChecking(false);
+					// After the current player makes a move
+					if (!winner) {
+						currentPlayer.current =
+							currentPlayer.current === "Red" ? "Yellow" : "Red";
+						// If AI mode is on and the current player is yellow, make a request to the AI endpoint
+						if (playingWithAI && currentPlayer.current === "Yellow") {
+							const startTime = Date.now();
+
+							const response = await fetch("/api/compute/next-move", {
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+								},
+								body: JSON.stringify({ grid: newGrid }),
+							});
+
+							const data = await response.json();
+
+							console.log(data);
+
+							// Assume the AI endpoint returns the column for the next move
+							const aiMove = data.move;
+
+							// Calculate the elapsed time
+							const elapsedTime = Date.now() - startTime;
+
+							// If less than a second has passed, wait the remaining time
+							const delay = elapsedTime < 1000 ? 1000 - elapsedTime : 0;
+
+							// Make the AI's move
+							setTimeout(() => {
+								handleClick(aiMove);
+							}, delay);
+						} else {
+							setIsChecking(false);
+						}
+					}
 				}
 				isColumnFull = false;
 				break;
@@ -141,7 +178,7 @@ const Play = () => {
 				.fill(null)
 				.map(() => Array(7).fill(null))
 		);
-		setCurrentPlayer("Red");
+		currentPlayer.current = "Red";
 		setWinner(null);
 		setLastMove(null);
 		setEmpty(
@@ -152,12 +189,51 @@ const Play = () => {
 		setWinningCells(null);
 	};
 
+	const playWithAI = () => {
+		restartGame();
+		setPlayingWithAI(true);
+	};
+
+	useEffect(() => {
+		if (playingWithAI && winner === "Yellow") {
+			let count = 0;
+			const intervalId = setInterval(() => {
+				setBgColor(count % 2 === 0 ? "bg-red-500" : "bg-gray-100");
+				count++;
+				if (count === 6) {
+					clearInterval(intervalId);
+				}
+			}, 150);
+		}
+	}, [playingWithAI, winner]);
+
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-black">
-			<h1 className="text-4xl font-bold mb-4">Play Connect 4!</h1>
+		<div
+			className={`flex flex-col items-center justify-center min-h-screen ${bgColor} transition-colors duration-100 text-black`}>
+			<h1 className="text-4xl font-bold mb-4">
+				Play Connect 4!{playingWithAI ? " (AI Mode)" : ""}
+			</h1>
+			<button
+				onClick={playWithAI}
+				disabled={playingWithAI}
+				className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold mb-4 py-2 px-4 rounded z-10">
+				Play with AI
+			</button>
 			{winner ? (
 				<div className="mb-4 z-10 flex items-center justify-center flex-col">
-					<h2 className="text-2xl mb-4">Winner: {winner}</h2>
+					<h2 className="text-3xl mb-4">
+						Winner:{" "}
+						<span
+							className={
+								playingWithAI && winner === "Yellow"
+									? "text-red-500"
+									: winner === "Yellow"
+									? "text-yellow-500"
+									: "text-red-500"
+							}>
+							{playingWithAI && winner === "Yellow" ? "AI" : winner}
+						</span>
+					</h2>
 					<button
 						onClick={restartGame}
 						className="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -169,11 +245,13 @@ const Play = () => {
 					className="text-2xl px-2 z-10"
 					style={{
 						backgroundColor:
-							currentPlayer === "Red"
+							currentPlayer.current === "Red"
 								? "rgba(255, 0, 0, 0.5)"
 								: "rgba(255, 255, 0, 0.5)",
 					}}>
-					Current Player: {currentPlayer}
+					{playingWithAI && currentPlayer.current === "Yellow" && isChecking
+						? "Thinking..."
+						: `Current Player: ${currentPlayer.current}`}
 				</h2>
 			)}
 			<div className="fixed">
@@ -181,7 +259,10 @@ const Play = () => {
 			</div>
 			<div
 				className="grid-cols-7 z-0 gap-0 w-[35rem] h-auto max-w-[100svw] px-2 sm:px-0"
-				style={{ display: winner ? "none" : "grid" }}>
+				style={{
+					display: winner ? "none" : "grid",
+					opacity: isChecking ? 0 : 1,
+				}}>
 				{Array(7)
 					.fill(null)
 					.map((_, index) => (
@@ -189,7 +270,7 @@ const Play = () => {
 							key={index}
 							className="relative aspect-square"
 							style={{
-								cursor: winner ? "normal" : "pointer",
+								cursor: winner || isChecking ? "normal" : "pointer",
 							}}
 							onMouseEnter={() => {
 								// if winner or all cells filled in the column
@@ -200,6 +281,8 @@ const Play = () => {
 									newHoveredCol[index] = true;
 									return newHoveredCol;
 								});
+
+								console.log(grid);
 							}}
 							onMouseLeave={() => {
 								setHoveredCol((prev) => {
@@ -217,7 +300,7 @@ const Play = () => {
 								className="absolute inset-0 rounded-full transition-opacity duration-300"
 								style={{
 									backgroundColor:
-										currentPlayer === "Red"
+										currentPlayer.current === "Red"
 											? "rgba(255, 0, 0, 0.5)"
 											: "rgba(255, 255, 0, 0.5)",
 									opacity: hoveredCol[index] ? 1 : 0,
@@ -259,7 +342,7 @@ const Play = () => {
 								style={{
 									borderRightWidth: x === 6 ? 2 : 0,
 									borderBottomWidth: y === 5 ? 2 : 0,
-									cursor: winner ? "normal" : "pointer",
+									cursor: winner || isChecking ? "normal" : "pointer",
 									backgroundColor: winningCells?.some(
 										(winningCell) =>
 											winningCell[0] === x && winningCell[1] === y
