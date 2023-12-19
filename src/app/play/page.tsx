@@ -27,7 +27,6 @@ const Play = () => {
 		null
 	);
 	const [isChecking, setIsChecking] = useState(false);
-	const [bgColor, setBgColor] = useState("bg-gray-100");
 
 	useEffect(() => {
 		const cellWidth = document.getElementById("board")!.offsetWidth / 7;
@@ -48,13 +47,17 @@ const Play = () => {
 			[-1, 1],
 			[1, -1],
 		];
+		let isTie = true;
 		for (let row = 0; row < 6; row++) {
 			for (let col = 0; col < 7; col++) {
+				if (!grid[row][col]) {
+					isTie = false;
+				}
 				if (grid[row][col]) {
 					for (let dir of directions) {
 						let i;
 						const winningCells = [];
-						for (i = 0; i < 6; i++) { // Increase the limit to 6
+						for (i = 0; i < 6; i++) {
 							const x = row + dir[0] * i,
 								y = col + dir[1] * i;
 							if (
@@ -76,6 +79,9 @@ const Play = () => {
 					}
 				}
 			}
+		}
+		if (isTie) {
+			return { winner: 'Tie', winningCells: null };
 		}
 		return { winner: null, winningCells: null };
 	};
@@ -101,10 +107,10 @@ const Play = () => {
 				});
 
 				const { winner, winningCells } = checkWin(newGrid);
-				if (winner && winningCells) {
+				if (winner) {
 					setTimeout(() => {
 						setWinner(winner);
-						setWinningCells(winningCells.map((cell) => [cell[0], cell[1]]));
+						if (winningCells) setWinningCells(winningCells.map((cell) => [cell[0], cell[1]]));
 						setIsChecking(false);
 					}, 500);
 				} else {
@@ -181,23 +187,10 @@ const Play = () => {
 		setPlayingWithAI(true);
 	};
 
-	useEffect(() => {
-		if (playingWithAI && winner === "Yellow") {
-			let count = 0;
-			const intervalId = setInterval(() => {
-				setBgColor(count % 2 === 0 ? "bg-red-500" : "bg-gray-100");
-				count++;
-				if (count === 6) {
-					clearInterval(intervalId);
-				}
-			}, 150);
-		}
-	}, [playingWithAI, winner]);
-
 	return (
 		<div
-			className={`flex flex-col items-center justify-center min-h-screen ${bgColor} transition-colors duration-100 text-black`}>
-			<h1 className="text-4xl font-bold mb-4">
+			className={`flex flex-col items-center justify-center min-h-screen ${playingWithAI && winner === "Yellow" ? "bg-black" : "bg-gray-100"} transition-colors duration-1000 text-black`}>
+			<h1 className={`${playingWithAI && winner === "Yellow" ? "text-gray-300" : "text-gray-800"} text-4xl font-bold mb-4`}>
 				Play Connect 4!{playingWithAI ? " (AI Mode)" : ""}
 			</h1>
 			<button
@@ -207,19 +200,21 @@ const Play = () => {
 				Play with AI
 			</button>
 			{winner ? (
-				<div className="mb-4 z-10 flex items-center justify-center flex-col">
+				<div className={`${playingWithAI && winner === "Yellow" ? "text-gray-300" : "text-gray-800"} mb-4 z-10 flex items-center justify-center flex-col`}>
 					<h2 className="text-3xl mb-4">
-						Winner:{" "}
-						<span
-							className={
-								playingWithAI && winner === "Yellow"
-									? "text-red-500"
-									: winner === "Yellow"
-									? "text-yellow-500"
-									: "text-red-500"
-							}>
-							{playingWithAI && winner === "Yellow" ? "AI" : winner}
-						</span>
+						{winner === 'Tie' ? 'The game is tied!' : 'Winner: '}
+						{winner !== 'Tie' && (
+							<span
+								className={
+									playingWithAI && winner === "Yellow"
+										? "text-red-500"
+										: winner === "Yellow"
+										? "text-yellow-500"
+										: "text-red-500"
+								}>
+								{playingWithAI && winner === "Yellow" ? "AI" : winner}
+							</span>
+						)}
 					</h2>
 					<button
 						onClick={restartGame}
