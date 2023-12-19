@@ -53,7 +53,8 @@ const Play = () => {
 				if (grid[row][col]) {
 					for (let dir of directions) {
 						let i;
-						for (i = 0; i < 4; i++) {
+						const winningCells = [];
+						for (i = 0; i < 6; i++) { // Increase the limit to 6
 							const x = row + dir[0] * i,
 								y = col + dir[1] * i;
 							if (
@@ -64,14 +65,9 @@ const Play = () => {
 								grid[x][y] !== grid[row][col]
 							)
 								break;
+							winningCells.push([col + dir[1] * i, row + dir[0] * i]);
 						}
-						if (i === 4) {
-							const winningCells = Array(4)
-								.fill(null)
-								.map((_, index) => [
-									col + dir[1] * index,
-									row + dir[0] * index,
-								]);
+						if (i >= 4) { // Check if there are at least 4 pieces in a row
 							return {
 								winner: grid[row][col],
 								winningCells: winningCells.map((cell) => [cell[0], cell[1]]),
