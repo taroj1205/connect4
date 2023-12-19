@@ -189,8 +189,21 @@ const Play = () => {
 
 	return (
 		<div
-			className={`flex flex-col items-center justify-center min-h-screen ${playingWithAI && winner === "Yellow" ? "bg-black" : "bg-gray-100"} transition-colors duration-1000 text-black`}>
-			<h1 className={`${playingWithAI && winner === "Yellow" ? "text-gray-300" : "text-gray-800"} text-4xl font-bold mb-4`}>
+			className={`flex flex-col items-center justify-center min-h-screen ${
+				playingWithAI && winner === "Yellow"
+					? "bg-black"
+					: !playingWithAI && winner === "Yellow"
+					? "bg-yellow-300"
+					: !playingWithAI && winner === "Red"
+					? "bg-red-300"
+					: "bg-gray-100"
+			} transition-colors duration-1000 text-black`}>
+			<h1
+				className={`${
+					playingWithAI && winner === "Yellow"
+						? "text-gray-300"
+						: "text-gray-800"
+				} text-4xl font-bold mb-4`}>
 				Play Connect 4!{playingWithAI ? " (AI Mode)" : ""}
 			</h1>
 			<button
@@ -200,17 +213,22 @@ const Play = () => {
 				Play with AI
 			</button>
 			{winner ? (
-				<div className={`${playingWithAI && winner === "Yellow" ? "text-gray-300" : "text-gray-800"} mb-4 z-10 flex items-center justify-center flex-col`}>
+				<div
+					className={`${
+						playingWithAI && winner === "Yellow"
+							? "text-gray-300"
+							: "text-gray-800"
+					} mb-4 z-10 flex items-center justify-center flex-col`}>
 					<h2 className="text-3xl mb-4">
-						{winner === 'Tie' ? 'The game is tied!' : 'Winner: '}
-						{winner !== 'Tie' && (
+						{winner === "Tie" ? "The game is tied!" : "Winner: "}
+						{winner !== "Tie" && (
 							<span
 								className={
 									playingWithAI && winner === "Yellow"
-										? "text-red-500"
+										? "text-red-500 font-semibold"
 										: winner === "Yellow"
-										? "text-yellow-500"
-										: "text-red-500"
+										? "text-yellow-500 font-semibold"
+										: "text-red-500 font-semibold"
 								}>
 								{playingWithAI && winner === "Yellow" ? "AI" : winner}
 							</span>
@@ -332,7 +350,7 @@ const Play = () => {
 										? winner === "Red"
 											? "rgba(255, 0, 0, 0.5)"
 											: winner === "Yellow"
-											? "rgba(255, 255, 0, 0.2)"
+											? "rgba(255, 255, 0, 0.1)"
 											: "transparent"
 										: "transparent",
 								}}
