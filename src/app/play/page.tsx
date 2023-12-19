@@ -1,4 +1,5 @@
 "use client";
+import { NextMove } from "@/lib/next_move";
 import { useEffect, useRef, useState } from "react";
 import Confetti from "react-dom-confetti";
 import { FaArrowDown } from "react-icons/fa";
@@ -119,20 +120,8 @@ const Play = () => {
 						if (playingWithAI && currentPlayer.current === "Yellow") {
 							const startTime = Date.now();
 
-							const response = await fetch("/api/compute/next-move", {
-								method: "POST",
-								headers: {
-									"Content-Type": "application/json",
-								},
-								body: JSON.stringify({ grid: newGrid }),
-							});
-
-							const data = await response.json();
-
-							console.log(data);
-
-							// Assume the AI endpoint returns the column for the next move
-							const aiMove = data.move;
+							const aiMove = await NextMove(grid);
+							console.log(aiMove);
 
 							// Calculate the elapsed time
 							const elapsedTime = Date.now() - startTime;
@@ -142,7 +131,9 @@ const Play = () => {
 
 							// Make the AI's move
 							setTimeout(() => {
-								handleClick(aiMove);
+								if (typeof aiMove === "number") {
+									handleClick(aiMove);
+								}
 							}, delay);
 						} else {
 							setIsChecking(false);
